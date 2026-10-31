@@ -1,0 +1,211 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="claude:viewport-fit-sides" content="cover"><title>Under the hood</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap"><link rel="stylesheet" href="css/site.css"><link rel="stylesheet" href="css/up.css"><link rel="stylesheet" href="css/chat.css"><script>try{var t=localStorage.getItem('ms-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style></head><body><a class="visually-hidden" href="#main">Skip to content</a><nav class="nav" aria-label="Main"><div class="wrap"><a class="brand" href="index.html"><svg class="logo" style="" width="26" viewBox="0 0 34 44" aria-hidden="true"><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6l-1.8 3.4h6.8l-1.8-3.4C24 29.8 31 24.4 31 16.2 31 8.4 25 2 17 2Z" fill="#ef5a4c"/><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="2"/><ellipse cx="11.5" cy="10.5" rx="3.6" ry="5.8" fill="#fff" opacity=".5" transform="rotate(24 11.5 10.5)"/><path d="M17 36c-1.4 3 2 5 0 8" fill="none" stroke="#8a6a3c" stroke-width="1.4"/></svg>MoSafety</a><div class="nav-links" data-tour="nav"><a href="problem.html">The problem</a><a href="chat.html">Chatbot</a><a href="register.html">The register</a><a href="evidence.html" aria-current="page">Under the hood</a></div><div class="nav-tools"><button class="btn coral small helpbtn" type="button" data-help data-tour="help"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.6v3.8M8 11v.4"/></svg><span class="t">Help now</span></button><button class="theme-btn" id="theme-btn" type="button" data-tour="theme" aria-label="Switch between day and dusk"><svg class="sun" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="4.6" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 1.5v2.6M11 17.9v2.6M1.5 11h2.6M17.9 11h2.6M4.3 4.3l1.8 1.8M15.9 15.9l1.8 1.8M4.3 17.7l1.8-1.8M15.9 6.1l1.8-1.8"/></g></svg><svg class="moon" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M16.5 12.6A7.5 7.5 0 0 1 7.4 3.5a7.5 7.5 0 1 0 9.1 9.1Z" fill="currentColor"/></svg></button></div></div></nav><header class="sky">
+  <svg class="cloud " style="--w:240px;top:70%;--t:70s;--d:-12s" viewBox="0 0 220 90" aria-hidden="true"><path class="shade" d="M30 78c-17 0-26-9-26-21 0-12 10-21 23-21 3-16 17-27 33-27 13 0 24 7 29 17 4-3 9-5 15-5 14 0 25 10 26 23 11 1 20 9 20 20 0 6-3 11-7 14Z" fill="currentColor" opacity=".55"/><path d="M30 70c-17 0-26-9-26-21 0-12 10-21 23-21 3-16 17-27 33-27 13 0 24 7 29 17 4-3 9-5 15-5 14 0 25 10 26 23 11 1 20 9 20 20 0 6-3 11-7 14Z" fill="currentColor"/></svg><svg class="cloud " style="--w:180px;top:82%;--t:90s;--d:-40s;opacity:.9" viewBox="0 0 220 90" aria-hidden="true"><path class="shade" d="M30 78c-17 0-26-9-26-21 0-12 10-21 23-21 3-16 17-27 33-27 13 0 24 7 29 17 4-3 9-5 15-5 14 0 25 10 26 23 11 1 20 9 20 20 0 6-3 11-7 14Z" fill="currentColor" opacity=".55"/><path d="M30 70c-17 0-26-9-26-21 0-12 10-21 23-21 3-16 17-27 33-27 13 0 24 7 29 17 4-3 9-5 15-5 14 0 25 10 26 23 11 1 20 9 20 20 0 6-3 11-7 14Z" fill="currentColor"/></svg><svg class="cloud " style="--w:130px;top:9%;--t:110s;--d:-70s;opacity:.75" viewBox="0 0 220 90" aria-hidden="true"><path class="shade" d="M30 78c-17 0-26-9-26-21 0-12 10-21 23-21 3-16 17-27 33-27 13 0 24 7 29 17 4-3 9-5 15-5 14 0 25 10 26 23 11 1 20 9 20 20 0 6-3 11-7 14Z" fill="currentColor" opacity=".55"/><path d="M30 70c-17 0-26-9-26-21 0-12 10-21 23-21 3-16 17-27 33-27 13 0 24 7 29 17 4-3 9-5 15-5 14 0 25 10 26 23 11 1 20 9 20 20 0 6-3 11-7 14Z" fill="currentColor"/></svg><svg class="bunting" viewBox="0 0 1500 56" preserveAspectRatio="none" aria-hidden="true"><path d="M0 8 Q 375 60 750 8 T 1500 8" fill="none" stroke="#7a5a2a" stroke-width="2.4"/><g><path d="M20 6 l26 0 -13 32z" fill="#ef5a4c" stroke="rgba(0,0,0,.12)"/><path d="M82 6 l26 0 -13 32z" fill="#f7b731" stroke="rgba(0,0,0,.12)"/><path d="M144 6 l26 0 -13 32z" fill="#22b3a4" stroke="rgba(0,0,0,.12)"/><path d="M206 6 l26 0 -13 32z" fill="#2f93e8" stroke="rgba(0,0,0,.12)"/><path d="M268 6 l26 0 -13 32z" fill="#ee80ae" stroke="rgba(0,0,0,.12)"/><path d="M330 6 l26 0 -13 32z" fill="#8a6ad8" stroke="rgba(0,0,0,.12)"/><path d="M392 6 l26 0 -13 32z" fill="#ef5a4c" stroke="rgba(0,0,0,.12)"/><path d="M454 6 l26 0 -13 32z" fill="#f7b731" stroke="rgba(0,0,0,.12)"/><path d="M516 6 l26 0 -13 32z" fill="#22b3a4" stroke="rgba(0,0,0,.12)"/><path d="M578 6 l26 0 -13 32z" fill="#2f93e8" stroke="rgba(0,0,0,.12)"/><path d="M640 6 l26 0 -13 32z" fill="#ee80ae" stroke="rgba(0,0,0,.12)"/><path d="M702 6 l26 0 -13 32z" fill="#8a6ad8" stroke="rgba(0,0,0,.12)"/><path d="M764 6 l26 0 -13 32z" fill="#ef5a4c" stroke="rgba(0,0,0,.12)"/><path d="M826 6 l26 0 -13 32z" fill="#f7b731" stroke="rgba(0,0,0,.12)"/><path d="M888 6 l26 0 -13 32z" fill="#22b3a4" stroke="rgba(0,0,0,.12)"/><path d="M950 6 l26 0 -13 32z" fill="#2f93e8" stroke="rgba(0,0,0,.12)"/><path d="M1012 6 l26 0 -13 32z" fill="#ee80ae" stroke="rgba(0,0,0,.12)"/><path d="M1074 6 l26 0 -13 32z" fill="#8a6ad8" stroke="rgba(0,0,0,.12)"/><path d="M1136 6 l26 0 -13 32z" fill="#ef5a4c" stroke="rgba(0,0,0,.12)"/><path d="M1198 6 l26 0 -13 32z" fill="#f7b731" stroke="rgba(0,0,0,.12)"/><path d="M1260 6 l26 0 -13 32z" fill="#22b3a4" stroke="rgba(0,0,0,.12)"/><path d="M1322 6 l26 0 -13 32z" fill="#2f93e8" stroke="rgba(0,0,0,.12)"/><path d="M1384 6 l26 0 -13 32z" fill="#ee80ae" stroke="rgba(0,0,0,.12)"/><path d="M1446 6 l26 0 -13 32z" fill="#8a6ad8" stroke="rgba(0,0,0,.12)"/></g></svg><svg class="float hide-sm" style="--x:9%;--y:26%;--t:6s" width="56" viewBox="0 0 34 44" aria-hidden="true"><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6l-1.8 3.4h6.8l-1.8-3.4C24 29.8 31 24.4 31 16.2 31 8.4 25 2 17 2Z" fill="#22b3a4"/><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="2"/><ellipse cx="11.5" cy="10.5" rx="3.6" ry="5.8" fill="#fff" opacity=".5" transform="rotate(24 11.5 10.5)"/><path d="M17 36c-1.4 3 2 5 0 8" fill="none" stroke="#8a6a3c" stroke-width="1.4"/></svg><svg class="float" style="--x:19%;--y:46%;--t:7.4s;--d:-2s" width="44" viewBox="0 0 34 44" aria-hidden="true"><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6l-1.8 3.4h6.8l-1.8-3.4C24 29.8 31 24.4 31 16.2 31 8.4 25 2 17 2Z" fill="#ee80ae"/><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="2"/><ellipse cx="11.5" cy="10.5" rx="3.6" ry="5.8" fill="#fff" opacity=".5" transform="rotate(24 11.5 10.5)"/><path d="M17 36c-1.4 3 2 5 0 8" fill="none" stroke="#8a6a3c" stroke-width="1.4"/></svg><svg class="float hide-sm" style="--x:4%;--y:58%;--t:5.2s;--d:-1s" width="36" viewBox="0 0 34 44" aria-hidden="true"><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6l-1.8 3.4h6.8l-1.8-3.4C24 29.8 31 24.4 31 16.2 31 8.4 25 2 17 2Z" fill="#ef5a4c"/><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="2"/><ellipse cx="11.5" cy="10.5" rx="3.6" ry="5.8" fill="#fff" opacity=".5" transform="rotate(24 11.5 10.5)"/><path d="M17 36c-1.4 3 2 5 0 8" fill="none" stroke="#8a6a3c" stroke-width="1.4"/></svg>
+  <div class="wrap">
+    <span class="kicker">Under the hood</span>
+    <h1>The code and the proof</h1>
+    <p class="lead">The code, the charts and the test results behind every claim on this site. Every number here comes from the notebook we ran on our own data. Code is folded away: open it when you want to check.</p>
+  </div>
+</header>
+
+<main id="main" data-page="evidence">
+<div class="wrap">
+<div class="ev">
+  <nav class="toc" aria-label="On this page" data-tour="toc">
+    <a href="#understanding">What it understands</a>
+    <a href="#data">The data</a>
+    <a href="#systems">Five systems</a>
+    <a href="#safety">Safety trade-off</a>
+    <a href="#matrix">Where it is wrong</a>
+    <a href="#confidence">How sure are we</a>
+    <a href="#errors">Error analysis</a>
+    <a href="#live">Live bot tests</a>
+    <a href="#audit">Audit of the bot</a>
+    <a href="#scorecard">Scorecard</a>
+    <a href="#responsible">Responsible NLP</a>
+  </nav>
+
+  <div>
+    <section class="ev-sec" id="understanding">
+      <div class="sec-head">
+        <span class="slide-tag">Slides 3 and 6: intents, flow, classification</span>
+        <h2>What the bot actually understands</h2>
+      </div>
+      <p class="takeaway">Only one part of MoSafety needs language understanding: the AI step that labels a message. The rest is routing.</p>
+      <div data-table="inventory"></div>
+      <p class="small" style="margin-top:12px">Source: the Botpress export, revision 979, read directly from its <span class="mono">bot.json</span>. A long instruction prompt in the export is attached to a node that no step leads to, so it never runs. The classification that does run is the shorter AI step inside the report path.</p>
+    </section>
+
+    <section class="ev-sec" id="data">
+      <div class="sec-head">
+        <span class="slide-tag">Slide 4: data</span>
+        <h2>The data: three synthetic datasets, checked, with a locked test set</h2>
+      </div>
+      <p class="takeaway">Risk skews towards serious cases, so accuracy alone would flatter the model. We report results per class and use macro-F1.</p>
+      <div class="kpis">
+        <div><b>480</b><span>labelled messages</span></div>
+        <div><b>3</b><span>synthetic datasets, 160 each</span></div>
+        <div><b>0</b><span>exact duplicate messages</span></div>
+        <div><b>160</b><span>messages locked as the test set</span></div>
+      </div>
+      <div class="figs">
+        <div class="fig"><div class="fig-title">Risk level, all 480 messages</div><p class="fig-sub">Darker means more urgent</p><div data-chart="risk-seg"></div></div>
+        <div class="fig"><div class="fig-title">Language of each message</div><p class="fig-sub">Tagged by content: does it contain a Kreol word?</p><div data-chart="lang-seg"></div></div>
+      </div>
+      <h3 style="margin:28px 0 10px">What our checks found</h3>
+      <ul style="max-width:68ch;color:var(--ink-2)">
+        <li>Nature is perfectly balanced, 120 messages each for verbal, physical, social and cyber. That is a sign the data is synthetic, and we say so.</li>
+        <li>“Minimal” means a question, not an incident. It is a different skill from judging how serious bullying is.</li>
+        <li>The datasets' own language labels mean different things in different files, so we tag language by content instead.</li>
+        <li>10 messages share a near-duplicate group with another message. They are kept on the same side of the split.</li>
+        <li>Slur terms are masked as placeholders in the datasets, so they stay out of prompts.</li>
+      </ul>
+      <h3 style="margin:28px 0 10px">The locked test set</h3>
+      <p>We locked one third of the data as a test set: 160 messages (16 Minimal, 39 Limited, 88 High, 17 Emergency), grouped so near-duplicates stay together and stratified by risk, with a fixed random seed. Rules and settings were chosen on the other 320 messages only. One disclosure: we looked at the test results once before adding the final system, and the notebook says so.</p>
+      <details class="code"><summary>Show the code <span>Python, locking the test set</span></summary><pre data-code="split"><code class="language-python"></code></pre><div class="code-actions"><button type="button" data-copy-code>Copy code</button></div></details>
+    </section>
+
+    <section class="ev-sec" id="systems">
+      <div class="sec-head">
+        <span class="slide-tag">Slides 5 and 9: methods and baselines</span>
+        <h2>Five systems, simplest first</h2>
+      </div>
+      <p class="takeaway">Each step adds something and costs something. The plain model catches 10 of 17 emergencies. The safety hybrid catches 16.</p>
+      <ol style="max-width:70ch;color:var(--ink-2);padding-left:1.2em">
+        <li><b>Always guess High.</b> The floor: what a system with no understanding scores.</li>
+        <li><b>Keyword rules.</b> What a checklist written by a teacher would do. No training.</li>
+        <li><b>TF-IDF with logistic regression.</b> The standard baseline. Character n-grams cope with Kreol spelling.</li>
+        <li><b>Plus an Emergency rule.</b> If a threat, weapon or self-harm pattern appears, force Emergency.</li>
+        <li><b>Plus a lowered alarm threshold (final).</b> Also flag Emergency when the model is only fairly sure. Chosen on development data to reach at least 95% recall.</li>
+      </ol>
+      <div class="figs" style="margin-top:28px">
+        <div class="fig"><div class="fig-title">Macro-F1 on the 160 test messages</div><p class="fig-sub">Higher is better. Blue is the final system.</p><div data-chart="sys-f1"></div></div>
+        <div class="fig"><div class="fig-title">Emergencies caught, of 17</div><p class="fig-sub">Our headline safety number</p><div data-chart="sys-recall"></div></div>
+      </div>
+      <div class="fig"><div class="fig-title">All the measures</div><p class="fig-sub">“Serious rated low” counts High or Emergency messages that the system rated Minimal or Limited. It is the worst kind of mistake.</p><div data-chart="sys-table"></div></div>
+      <details class="code"><summary>Show the code <span>Python, the rules</span></summary><pre data-code="rules"><code class="language-python"></code></pre><div class="code-actions"><button type="button" data-copy-code>Copy code</button></div></details>
+      <details class="code"><summary>Show the code <span>Python, the model</span></summary><pre data-code="model"><code class="language-python"></code></pre><div class="code-actions"><button type="button" data-copy-code>Copy code</button></div></details>
+      <details class="code"><summary>Show the code <span>Python, the measures</span></summary><pre data-code="metrics"><code class="language-python"></code></pre><div class="code-actions"><button type="button" data-copy-code>Copy code</button></div></details>
+    </section>
+
+    <section class="ev-sec" id="safety">
+      <div class="sec-head">
+        <span class="slide-tag">Slide 9: safety trade-off</span>
+        <h2>Catching more emergencies means more false alarms</h2>
+      </div>
+      <p class="takeaway">A counsellor can dismiss a false alarm. A missed emergency cannot be undone. So we accept the extra alarms.</p>
+      <div class="fig" style="max-width:720px"><div class="fig-title">Emergency recall against false-alarm rate</div><p class="fig-sub">Hover the line to read any threshold</p><div data-chart="tradeoff"></div></div>
+      <p>We fixed the rule in advance: pick the largest threshold whose cross-validated recall on development data reaches 95%. That gave t = 0.19. The locked test set was not used to choose it. On the test set the final system caught 16 of 17 emergencies and raised 14 false alarms. All 14 were truly High cases, so a counsellor would have wanted to read them anyway.</p>
+      <details class="code"><summary>Show the code <span>Python, choosing the threshold</span></summary><pre data-code="threshold"><code class="language-python"></code></pre><div class="code-actions"><button type="button" data-copy-code>Copy code</button></div></details>
+    </section>
+
+    <section class="ev-sec" id="matrix">
+      <div class="sec-head">
+        <span class="slide-tag">Slides 9 and 10: confusion matrix</span>
+        <h2>Where the final system is wrong</h2>
+      </div>
+      <p class="takeaway">Most mistakes are one level off. The dangerous ones sit in the red-outlined corner.</p>
+      <div class="figs">
+        <div class="fig"><div data-chart="heat"></div></div>
+        <div class="fig"><div class="fig-title">Per-class results, final system</div><p class="fig-sub">Emergency recall is high and its precision is low: that is the trade in the previous chart.</p><div data-chart="report"></div></div>
+      </div>
+    </section>
+
+    <section class="ev-sec" id="confidence">
+      <div class="sec-head">
+        <span class="slide-tag">Slide 9: confidence and languages</span>
+        <h2>How sure are we?</h2>
+      </div>
+      <p class="takeaway">With 160 test messages the numbers are indicative, not exact. Treat them as a range.</p>
+      <div class="figs" style="grid-template-columns:minmax(0,1fr);gap:36px">
+        <div class="fig" style="max-width:720px"><div class="fig-title">Final system, 95% intervals</div><p class="fig-sub">1,000 bootstrap resamples</p><div data-chart="ci"></div></div>
+        <div class="fig"><div class="fig-title">Does Kreol do worse?</div><p class="fig-sub">Slices are small, so read them as hints</p><div data-table="lang"></div><p class="small" style="margin-top:10px">We see no clear gap here. But the Kreol in this data was written by a model. Real student Kreol, with spelling variants and slang, is probably harder. This is the main caveat of the whole evaluation.</p></div>
+      </div>
+      <div class="fig" style="max-width:720px;margin-top:20px"><div class="fig-title">Does more data help?</div><p class="fig-sub">Plain TF-IDF + logistic regression, repeated grouped cross-validation over all 480 messages</p><div data-chart="lcurve"></div>
+        <p class="small" style="margin-top:10px">At 320 training messages the repeated average is 0.79, and our single locked split scored 0.72. So our headline number is on the cautious side. Performance rises slowly with more data.</p></div>
+      <details class="code"><summary>Show the code <span>Python, the learning curve</span></summary><pre data-code="lcurve"><code class="language-python"></code></pre><div class="code-actions"><button type="button" data-copy-code>Copy code</button></div></details>
+    </section>
+
+    <section class="ev-sec" id="errors">
+      <div class="sec-head">
+        <span class="slide-tag">Slide 10: error analysis</span>
+        <h2>What goes wrong, and where it travels</h2>
+      </div>
+      <p class="takeaway">42 of 160 test messages are wrong. The kind of mistake matters more than the count.</p>
+      <div class="chain" aria-label="How an error travels">
+        <div><b>Student's wording</b>slang, spelling, no violent word</div>
+        <div><b>Language handling</b>Kreol is low-resource</div>
+        <div><b>Classifier</b>reads the message</div>
+        <div><b>Risk label</b>too low or too high</div>
+        <div><b>Flow branch</b>which path it takes</div>
+        <div><b>What the counsellor sees</b>a late or a noisy report</div>
+      </div>
+      <div class="figs">
+        <div class="fig"><div class="fig-title">The 42 mistakes, by type</div><p class="fig-sub">Test messages</p><div data-chart="errtypes"></div></div>
+        <div class="fig">
+          <div class="fig-title">Reading the mistakes</div>
+          <ul style="color:var(--ink-2);margin:6px 0 0;padding-left:1.1em">
+            <li><b>Under-triage (5).</b> All are indirect harm: exclusion, a group made to mock someone, an edited photo, a rumour. Some of our labels are arguable, which is why a second person labelling matters.</li>
+            <li><b>False alarms (14).</b> All truly High, pushed up by the safety setting. Cheap, but they would flood a real queue.</li>
+            <li><b>Question vs incident (4).</b> When unsure, the bot should ask a clarifying question.</li>
+          </ul>
+        </div>
+      </div>
+      <h3 style="margin:26px 0 10px">The five serious cases rated too low</h3>
+      <div data-table="under"></div>
+      <h3 style="margin:26px 0 10px">The one missed emergency</h3>
+      <div class="notice warn" role="note"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 2 1.5 17h17L10 2Z"/><path d="M10 8v4M10 14.5v.5"/></svg><p>Content note: the next message is a synthetic example about not wanting to live.</p></div>
+      <p class="quote">“Mo nepli anvi viv akoz bann posts ek stickers zot pe fer lor mwa.”<br><span class="small">Kreol. In English: I no longer want to live because of the posts and stickers they make about me. Our label <span class="pill r-Emergency">Emergency</span> · model said <span class="pill r-High">High</span></span></p>
+      <p>No rule and no training example covered this Kreol phrase. A Kreol self-harm word list, built with the school, is the most valuable fix. We chose not to add it and re-score the same test set, because that would be training on the test set. It goes into the next round and is tested on fresh messages.</p>
+    </section>
+
+    <section class="ev-sec" id="live">
+      <div class="sec-head">
+        <span class="slide-tag">Slides 8 and 9: the real bot</span>
+        <h2>Tests on the live chatbot</h2>
+      </div>
+      <p class="takeaway">The numbers above come from a Python model. This is the real Botpress bot: 3 of 9 scenarios passed, 2 in part, 4 failed.</p>
+      <div data-table="live"></div>
+      <h3 style="margin:28px 0 10px">Still to run</h3>
+      <ul style="color:var(--ink-2);max-width:68ch">
+        <li><span class="st pending"><span aria-hidden="true">…</span>PENDING</span> Scripted scenarios D4 (refuses to name the bully), D10 (slur in the input) and D12 (switching between languages).</li>
+        <li><span class="st pending"><span aria-hidden="true">…</span>PENDING</span> 80 messages through the bot: 60 from the test set and 20 fresh ones written by the group.</li>
+        <li><span class="st pending"><span aria-hidden="true">…</span>PENDING</span> Two people labelling the fresh messages, to report how well they agree (Cohen's kappa).</li>
+        <li><span class="st pending"><span aria-hidden="true">…</span>PENDING</span> A proper French test and the scripted emergency path.</li>
+      </ul>
+    </section>
+
+    <section class="ev-sec" id="audit">
+      <div class="sec-head">
+        <span class="slide-tag">Slides 10 and 11: audit</span>
+        <h2>Does the bot do what it says?</h2>
+      </div>
+      <p class="takeaway">We checked the 21 reports the bot saved during our testing, and compared its own sentences with what the Botpress export actually does.</p>
+      <div class="fig" style="max-width:720px"><div class="fig-title">Problems in the 21 saved reports</div><p class="fig-sub">Share of rows affected</p><div data-chart="audit"></div>
+        <p class="small" style="margin-top:10px">These are plumbing bugs in the flow, not mistakes in the language understanding.</p></div>
+      <div class="fig" style="margin-top:28px"><div class="fig-title">The bot's promises against the export</div><p class="fig-sub">Of 12 items, 5 are unsupported or simulated claims, and 6 are bugs, gaps or parts that are not connected. One is partly true.</p><div data-table="claims"></div></div>
+    </section>
+
+    <section class="ev-sec" id="scorecard">
+      <div class="sec-head">
+        <span class="slide-tag">Slide 9: scorecard</span>
+        <h2>Scorecard</h2>
+      </div>
+      <p class="takeaway">Each row has a measure, the evidence, a score, what it means and what we decide to do. Rows marked pending wait for the live tests above.</p>
+      <div data-table="score"></div>
+    </section>
+
+    <section class="ev-sec" id="responsible">
+      <div class="sec-head">
+        <span class="slide-tag">Slide 11: responsible NLP</span>
+        <h2>Responsible NLP: what we did, and what we did not do</h2>
+      </div>
+      <div data-table="resp"></div>
+      <p class="small" style="margin-top:14px">Large-language-model tools helped generate the synthetic datasets, draft knowledge-base documents and draft code. The team reviewed, corrected and adjusted everything, and the numbers on this page come from the notebook code run on our data.</p>
+    </section>
+  </div>
+</div>
+</div>
+
+  <section class="bridge"><div class="wrap"><a class="prev-link" href="register.html">&larr; Back to The register</a></div></section>
+</main>
+<footer class="foot"><div class="wrap"><div><p class="credit"><svg class="" style="" width="28" viewBox="0 0 34 44" aria-hidden="true"><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6l-1.8 3.4h6.8l-1.8-3.4C24 29.8 31 24.4 31 16.2 31 8.4 25 2 17 2Z" fill="#f7b731"/><path d="M17 2C9 2 3 8.4 3 16.2c0 8.2 9 13.6 12.4 15.6" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="2"/><ellipse cx="11.5" cy="10.5" rx="3.6" ry="5.8" fill="#fff" opacity=".5" transform="rotate(24 11.5 10.5)"/><path d="M17 36c-1.4 3 2 5 0 8" fill="none" stroke="#8a6a3c" stroke-width="1.4"/></svg><span>Developed by <b>Mr Mooraby Sultaan</b></span></p><small>MoSafety is a university prototype for the SIS 6223 NLP Mini-Project, Track F. All test data is synthetic, emergency alerts are simulated, and a person makes every decision. Parts of this project were produced with AI tools and reviewed by the team.</small></div></div></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script><script src="data/results.js" defer></script><script src="data/code.js" defer></script><script src="js/charts.js" defer></script><script src="js/site.js" defer></script><script src="js/tour.js" defer></script><script src="js/chat.js" defer></script></body></html>
